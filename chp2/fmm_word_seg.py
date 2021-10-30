@@ -1,7 +1,7 @@
 # Defined in Section 2.2.2
 
 def load_dict():
-    f = open("lexicon.txt")
+    f = open("lexicon.txt", 'r', encoding='UTF-8')
     lexicon = set()
     max_len = 0
     for line in f:
@@ -27,8 +27,9 @@ def fmm_word_seg(sentence, lexicon, max_len):
             end -= 1
     return words
 
+
 lexicon, max_len = load_dict()
 words = fmm_word_seg(input("请输入句子："), lexicon, max_len)
 
 for word in words:
-    print(word,) 
+    print(word, )
