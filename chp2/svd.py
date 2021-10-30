@@ -13,6 +13,7 @@ M = np.array([[0, 2, 1, 1, 1, 1, 1, 2, 1, 3],
               [1, 1, 0, 0, 0, 0, 0, 1, 0, 1],
               [3, 2, 1, 1, 1, 1, 1, 2, 1, 0]])
 
+
 def pmi(M, positive=True):
     col_totals = M.sum(axis=0)
     row_totals = M.sum(axis=1)
@@ -27,6 +28,7 @@ def pmi(M, positive=True):
         M[M < 0] = 0.0
     return M
 
+
 M_pmi = pmi(M)
 
 np.set_printoptions(precision=2)
@@ -35,8 +37,10 @@ print(M_pmi)
 U, s, Vh = np.linalg.svd(M_pmi)
 
 import matplotlib.pyplot as plt
-plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
 
+# plt.rcParams['font.sans-serif'] = ['Arial Unicode MS']
+plt.rcParams['font.sans-serif'] = ['SimHei']  # 显示中文标签
+plt.rcParams['axes.unicode_minus'] = False
 words = ["我", "喜欢", "自然", "语言", "处理", "爱", "深度", "学习", "机器", "。"]
 
 for i in range(len(words)):
@@ -45,4 +49,3 @@ plt.xlim(0, 0.6)
 plt.ylim(-0.5, 0.6)
 plt.savefig('svd.pdf')
 plt.show()
-
