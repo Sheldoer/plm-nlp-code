@@ -269,6 +269,8 @@ class ELMoLstmEncoder(nn.Module):
             # convert back to original sequence order using rev_idx
             stacked_backward_states.append(backward.gather(1, rev_idx))
 
+            forward_inputs, backward_inputs = forward, backward
+
         # stacked_forward_states: [batch_size, seq_len, projection_dim] * num_layers
         # stacked_backward_states: [batch_size, seq_len, projection_dim] * num_layers
         return stacked_forward_states, stacked_backward_states
