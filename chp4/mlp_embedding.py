@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 
+
 class MLP(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim, num_class):
         super(MLP, self).__init__()
@@ -23,6 +24,7 @@ class MLP(nn.Module):
         # 获得每个序列属于某一类别概率的对数值
         probs = F.log_softmax(outputs, dim=1)
         return probs
+
 
 mlp = MLP(vocab_size=8, embedding_dim=3, hidden_dim=5, num_class=2)
 # 输入为两个长度为4的整数序列

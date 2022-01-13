@@ -10,6 +10,7 @@ from tqdm.auto import tqdm
 from utils import BOS_TOKEN, EOS_TOKEN, PAD_TOKEN
 from utils import load_reuters, save_pretrained, get_loader, init_weights
 
+
 class RnnlmDataset(Dataset):
     def __init__(self, corpus, vocab):
         self.data = []
@@ -38,6 +39,7 @@ class RnnlmDataset(Dataset):
         targets = pad_sequence(targets, batch_first=True, padding_value=self.pad)
         return (inputs, targets)
 
+
 class RNNLM(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim):
         super(RNNLM, self).__init__()
@@ -55,6 +57,7 @@ class RNNLM(nn.Module):
         output = self.output(hidden)
         log_probs = F.log_softmax(output, dim=2)
         return log_probs
+
 
 embedding_dim = 64
 context_size = 2
@@ -90,4 +93,3 @@ for epoch in range(num_epoch):
     print(f"Loss: {total_loss:.2f}")
 
 save_pretrained(vocab, model.embeddings.weight.data, "rnnlm.vec")
-

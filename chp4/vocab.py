@@ -2,6 +2,7 @@
 
 from collections import defaultdict, Counter
 
+
 class Vocab:
     def __init__(self, tokens=None):
         self.idx_to_token = list()
@@ -48,4 +49,3 @@ def read_vocab(path):
     with open(path, 'r') as f:
         tokens = f.read().split('\n')
     return Vocab(tokens)
-

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="eae223f4-24c9-4884-a234-b802963657c4" name="kxniu@10.10.80.65:22" url="http:///">
+        <fileTransfer rootFolder="/home/kxniu/plm_nlp" accessType="SFTP" host="10.10.80.65" port="22" sshConfigId="c552f813-6764-484f-8b55-10fb6e76285e" sshConfig="kxniu@10.10.80.65:22 password" />
+      </webServer>
+    </option>
+  </component>
+</project>

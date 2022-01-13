@@ -10,16 +10,20 @@ from collections import defaultdict
 from vocab import Vocab
 from utils import load_treebank, length_to_mask
 
-#tqdm是一个Pyth模块，能以进度条的方式显式迭代的进度
+# tqdm是一个Pyth模块，能以进度条的方式显式迭代的进度
 from tqdm.auto import tqdm
+
 
 class TransformerDataset(Dataset):
     def __init__(self, data):
         self.data = data
+
     def __len__(self):
         return len(self.data)
+
     def __getitem__(self, i):
         return self.data[i]
+
 
 def collate_fn(examples):
     lengths = torch.tensor([len(ex[0]) for ex in examples])
@@ -29,6 +33,7 @@ def collate_fn(examples):
     inputs = pad_sequence(inputs, batch_first=True, padding_value=vocab["<pad>"])
     targets = pad_sequence(targets, batch_first=True, padding_value=vocab["<pad>"])
     return inputs, lengths, targets, inputs != vocab["<pad>"]
+
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout=0.1, max_len=512):
@@ -45,6 +50,7 @@ class PositionalEncoding(nn.Module):
     def forward(self, x):
         x = x + self.pe[:x.size(0), :]
         return x
+
 
 class Transformer(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim, num_class,
@@ -70,12 +76,13 @@ class Transformer(nn.Module):
         log_probs = F.log_softmax(logits, dim=-1)
         return log_probs
 
+
 embedding_dim = 128
 hidden_dim = 128
 batch_size = 32
 num_epoch = 5
 
-#加载数据
+# 加载数据
 train_data, test_data, vocab, pos_vocab = load_treebank()
 train_dataset = TransformerDataset(train_data)
 test_dataset = TransformerDataset(test_data)
@@ -84,14 +91,14 @@ test_data_loader = DataLoader(test_dataset, batch_size=1, collate_fn=collate_fn,
 
 num_class = len(pos_vocab)
 
-#加载模型
+# 加载模型
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = Transformer(len(vocab), embedding_dim, hidden_dim, num_class)
-model.to(device) #将模型加载到GPU中（如果已经正确安装）
+model.to(device)  # 将模型加载到GPU中（如果已经正确安装）
 
-#训练过程
+# 训练过程
 nll_loss = nn.NLLLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001) #使用Adam优化器
+optimizer = optim.Adam(model.parameters(), lr=0.001)  # 使用Adam优化器
 
 model.train()
 for epoch in range(num_epoch):
@@ -106,7 +113,7 @@ for epoch in range(num_epoch):
         total_loss += loss.item()
     print(f"Loss: {total_loss:.2f}")
 
-#测试过程
+# 测试过程
 acc = 0
 total = 0
 for batch in tqdm(test_data_loader, desc=f"Testing"):
@@ -116,5 +123,5 @@ for batch in tqdm(test_data_loader, desc=f"Testing"):
         acc += (output.argmax(dim=-1) == targets)[mask].sum().item()
         total += mask.sum().item()
 
-#输出在测试集上的准确率
+# 输出在测试集上的准确率
 print(f"Acc: {acc / total:.2f}")

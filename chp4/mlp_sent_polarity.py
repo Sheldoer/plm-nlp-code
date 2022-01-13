@@ -8,13 +8,17 @@ from collections import defaultdict
 from vocab import Vocab
 from utils import load_sentence_polarity
 
+
 class BowDataset(Dataset):
     def __init__(self, data):
         self.data = data
+
     def __len__(self):
         return len(self.data)
+
     def __getitem__(self, i):
         return self.data[i]
+
 
 def collate_fn(examples):
     inputs = [torch.tensor(ex[0]) for ex in examples]
@@ -24,6 +28,7 @@ def collate_fn(examples):
     inputs = torch.cat(inputs)
     return inputs, offsets, targets
 
+
 class MLP(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim, num_class):
         super(MLP, self).__init__()
@@ -31,12 +36,19 @@ class MLP(nn.Module):
         self.linear1 = nn.Linear(embedding_dim, hidden_dim)
         self.activate = F.relu
         self.linear2 = nn.Linear(hidden_dim, num_class)
+
     def forward(self, inputs, offsets):
+        print("inputs.shape:", inputs.shape)
         embedding = self.embedding(inputs, offsets)
+        print("embedding.shape:", embedding.shape)
         hidden = self.activate(self.linear1(embedding))
+        print("hidden.shape:", hidden.shape)
         outputs = self.linear2(hidden)
+        print("outputs:", outputs)
         log_probs = F.log_softmax(outputs, dim=1)
+        print("log_probs:", log_probs)
         return log_probs
+
 
 # tqdm是一个Python模块，能以进度条的方式显示迭代的进度
 from tqdm.auto import tqdm
@@ -46,10 +58,12 @@ embedding_dim = 128
 hidden_dim = 256
 num_class = 2
 batch_size = 32
-num_epoch = 5
+num_epoch = 1
 
 # 加载数据
 train_data, test_data, vocab = load_sentence_polarity()
+print(vocab.token_to_idx.items())
+
 train_dataset = BowDataset(train_data)
 test_dataset = BowDataset(test_data)
 train_data_loader = DataLoader(train_dataset, batch_size=batch_size, collate_fn=collate_fn, shuffle=True)
@@ -58,11 +72,11 @@ test_data_loader = DataLoader(test_dataset, batch_size=1, collate_fn=collate_fn,
 # 加载模型
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = MLP(len(vocab), embedding_dim, hidden_dim, num_class)
-model.to(device) # 将模型加载到CPU或GPU设备
+model.to(device)  # 将模型加载到CPU或GPU设备
 
-#训练过程
+# 训练过程
 nll_loss = nn.NLLLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001) # 使用Adam优化器
+optimizer = optim.Adam(model.parameters(), lr=0.001)  # 使用Adam优化器
 
 model.train()
 for epoch in range(num_epoch):

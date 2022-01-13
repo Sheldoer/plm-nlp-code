@@ -13,13 +13,17 @@ from utils import load_sentence_polarity, length_to_mask
 # tqdm是一个Pyth模块，能以进度条的方式显式迭代的进度
 from tqdm.auto import tqdm
 
+
 class TransformerDataset(Dataset):
     def __init__(self, data):
         self.data = data
+
     def __len__(self):
         return len(self.data)
+
     def __getitem__(self, i):
         return self.data[i]
+
 
 def collate_fn(examples):
     lengths = torch.tensor([len(ex[0]) for ex in examples])
@@ -28,6 +32,7 @@ def collate_fn(examples):
     # 对batch内的样本进行padding，使其具有相同长度
     inputs = pad_sequence(inputs, batch_first=True)
     return inputs, lengths, targets
+
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout=0.1, max_len=512):
@@ -45,6 +50,7 @@ class PositionalEncoding(nn.Module):
         x = x + self.pe[:x.size(0), :]
         return x
 
+
 class Transformer(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim, num_class,
                  dim_feedforward=512, num_head=2, num_layers=2, dropout=0.1, max_len=128, activation: str = "relu"):
@@ -59,7 +65,6 @@ class Transformer(nn.Module):
         # 输出层
         self.output = nn.Linear(hidden_dim, num_class)
 
-
     def forward(self, inputs, lengths):
         inputs = torch.transpose(inputs, 0, 1)
         hidden_states = self.embeddings(inputs)
@@ -70,6 +75,7 @@ class Transformer(nn.Module):
         output = self.output(hidden_states)
         log_probs = F.log_softmax(output, dim=1)
         return log_probs
+
 
 embedding_dim = 128
 hidden_dim = 128
@@ -87,11 +93,11 @@ test_data_loader = DataLoader(test_dataset, batch_size=1, collate_fn=collate_fn,
 # 加载模型
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 model = Transformer(len(vocab), embedding_dim, hidden_dim, num_class)
-model.to(device) # 将模型加载到GPU中（如果已经正确安装）
+model.to(device)  # 将模型加载到GPU中（如果已经正确安装）
 
 # 训练过程
 nll_loss = nn.NLLLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001) # 使用Adam优化器
+optimizer = optim.Adam(model.parameters(), lr=0.001)  # 使用Adam优化器
 
 model.train()
 for epoch in range(num_epoch):
